@@ -1,0 +1,142 @@
+<?php
+
+/** Plugin Name: How to create Custom Post Types, Taxonomy, and metadata 
+ * Description: 
+ * (1) create custom post types Books
+ * (2) Create custom taxonomy - category for the  custom post types books
+ * (3) Create custom taxonomy - tag for the  custom post types books
+ * (4) Create custom Meta Box for the custom post types books
+ *  Version: 1.0.0
+ *  Author: Funke Adebisi
+ **/
+/**
+ * Register a custom post type book.
+ */
+function custom_post_type_book()
+{
+    $labels = array(
+        'name'                  => 'Books',
+        'singular_name'         => 'Book',
+        'menu_name'             => 'Books',
+        'name_admin_bar'        => 'Book',
+        'add_new'               => 'Add New',
+        'add_new_item'          => 'Add New book',
+        'new_item'              => 'New Book',
+        'edit_item'             => 'Edit Book',
+        'view_item'             => 'View Book',
+        'all_items'             => 'All Books',
+        'search_items'          => 'Search Books',
+        'parent_item_colon'     => 'Parent Books:',
+        'not_found'             => 'No Books Found.',
+        'not_found_in_trash'    => 'No Books Found in Trash.',
+        'featured_image'        => 'Book Cover Image',
+        'set_featured_image'    => 'Set Book Cover Image',
+        'remove_featured_image' => 'Remove Cover Image',
+        'use_featured_image'    => 'Use as Cover image',
+        'archives'              => 'Book Archives',
+        'insert_into_item'      => 'Insert into Book',
+        'uploaded_to_this_item' => 'Uploaded To This Book',
+        'filter_items_list'     => 'Filter Books List',
+        'items_list_navigation' => 'Books List Navigation',
+        'items_list'            => 'Books List',
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array('slug' => 'book'),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => null,
+        'supports'           => array(
+            'title',
+            'editor', 'author', 'thumbnail', 'excerpt', 'comments',
+        ),
+    );
+
+    register_post_type('book', $args);
+}
+
+add_action('init', 'custom_post_type_book');
+
+
+/**
+ * Register a custom taxonomy (category) for post type book".
+ */
+
+add_action('init', 'custom_taxonomy_category_book');
+function custom_taxonomy_category_book()
+{
+
+    register_taxonomy(
+        'category',
+        'book',
+        array(
+            'hierarchical'          => true,
+            'query_var'             => 'category_name',
+            'rewrite'            => array('slug' => 'book'),
+            'public'                => true,
+            'show_ui'               => true,
+            'show_admin_column'     => true,
+            '_builtin'              => true,
+            'capabilities'          => array(
+                'manage_terms' => 'manage_categories',
+                'edit_terms'   => 'edit_categories',
+                'delete_terms' => 'delete_categories',
+                'assign_terms' => 'assign_categories',
+            ),
+            'show_in_rest'          => true,
+            'rest_base'             => 'categories',
+            'rest_controller_class' => 'WP_REST_Terms_Controller',
+        )
+    );
+}
+
+/**
+ * Register a custom taxonomy (tag) for post type book".
+ */
+add_action('init', 'custom_taxonomy_tag_book');
+function custom_taxonomy_tag_book()
+{
+    register_taxonomy(
+        'book_tag',
+        'book',
+        array(
+            'hierarchical'          => false,
+            'query_var'             => 'tag',
+            'rewrite'            => array('slug' => 'book'),
+            'public'                => true,
+            'show_ui'               => true,
+            'show_admin_column'     => true,
+            '_builtin'              => true,
+            'capabilities'          => array(
+                'manage_terms' => 'manage_post_tags',
+                'edit_terms'   => 'edit_post_tags',
+                'delete_terms' => 'delete_post_tags',
+                'assign_terms' => 'assign_post_tags',
+            ),
+            'show_in_rest'          => true,
+            'rest_base'             => 'tags',
+            'rest_controller_class' => 'WP_REST_Terms_Controller',
+        )
+    );
+}
+/**
+ * Add custom meta boxes to post type book editing screen
+ */
+function add_metabox_book()
+{
+    /* add_meta_box( $id:string, $title:string, $callback:callable, $screen:string|array|WP_Screen|null, $context:string, $priority:string, $callback_args:array|null )*/
+    add_meta_box('metabox-id', 'Book Meta Box', 'add_metabox_book_function', 'book', 'side', 'default');
+}
+add_action('add_meta_boxes', 'add_metabox_book');
+
+function add_metabox_book_function()
+{
+    echo 'This is my custom meta box for post type book';
+}
